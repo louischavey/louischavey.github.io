@@ -1,0 +1,19 @@
+name: Rebuild portfolio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "descriptions/**"
+      - "media/**"
+
+jobs:
+  request-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request Vercel production rebuild
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.PORTFOLIO_DEPLOY_HOOK_URL }}
+        run: |
+          test -n "$VERCEL_DEPLOY_HOOK_URL"
+          curl --fail --request POST "$VERCEL_DEPLOY_HOOK_URL"

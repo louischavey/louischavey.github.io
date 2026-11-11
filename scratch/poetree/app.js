@@ -1,5 +1,3 @@
-import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs";
-
 const CORE_URL = "https://raw.githubusercontent.com/louischavey/poetree/master/poetree_core.py";
 const STORAGE_KEY = "louis-chavey-poetree-garden-v1";
 const PLANTING_BOUNDS = { left: 0.1, top: 0.18, right: 0.9, bottom: 0.9 };
@@ -13,6 +11,7 @@ const status = document.querySelector("#status");
 const gardenList = document.querySelector("#garden-list");
 
 let pyodide;
+let loadPyodide;
 let garden = loadGarden();
 let plantStates = [];
 let selectedId = null;
@@ -272,7 +271,12 @@ resetButton.addEventListener("click", () => {
 window.addEventListener("resize", draw);
 
 async function boot() {
+  if (window.location.protocol === "file:") {
+    setStatus("Poetree must be opened through a local web server. From this folder, run: python -m http.server 8000 — then open http://localhost:8000.");
+    return;
+  }
   try {
+    ({ loadPyodide } = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs"));
     pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/" });
     const response = await fetch(CORE_URL);
     if (!response.ok) throw new Error("The Poetree growth core could not be loaded.");
