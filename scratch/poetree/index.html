@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Poetree is a local garden of word-grown plants by Louis Chavey.">
+    <title>Poetree — Louis Chavey</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main>
+      <header class="intro">
+        <p class="eyebrow">Scratch</p>
+        <h1>Poetree</h1>
+        <p>A local garden of word-grown plants. Click open ground to plant; click a root to cultivate it. Your garden stays in this browser.</p>
+      </header>
+
+      <section class="controls" aria-label="Poetree controls">
+        <fieldset>
+          <legend>Plant type</legend>
+          <label><input checked name="plant-type" type="radio" value="flower"> Flower</label>
+          <label><input name="plant-type" type="radio" value="conifer"> Tree</label>
+          <label><input name="plant-type" type="radio" value="fern"> Fern</label>
+        </fieldset>
+        <label class="words" for="words">Words
+          <textarea disabled id="words" maxlength="12000" placeholder="Choose a spot or plant, then enter up to 100 words."></textarea>
+        </label>
+        <div class="actions">
+          <button disabled id="grow" type="button">Grow</button>
+          <button disabled id="undo" type="button">Undo last growth</button>
+          <button disabled id="reset" type="button">Reset garden</button>
+        </div>
+        <p aria-live="polite" class="status" id="status">Loading Poetree…</p>
+      </section>
+
+      <section class="garden-wrap" aria-label="Your Poetree garden">
+        <canvas aria-describedby="garden-instructions" id="garden"></canvas>
+        <p class="visually-hidden" id="garden-instructions">Click an empty place in the garden to select a location for a new plant. Click a root to select an existing plant for watering.</p>
+      </section>
+
+      <section class="reading" aria-labelledby="garden-reading">
+        <h2 id="garden-reading">Garden reading</h2>
+        <p id="garden-list">No plants yet.</p>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

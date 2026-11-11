@@ -1,0 +1,42 @@
+:root {
+  color: #1d3329;
+  background: #f8f6ed;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.45;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; }
+
+main { width: min(100% - 2rem, 72rem); margin: 0 auto; padding: 2rem 0 4rem; }
+
+.intro { max-width: 48rem; margin-bottom: 2rem; }
+.eyebrow { margin: 0 0 .5rem; color: #63716a; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+h1 { margin: 0 0 .8rem; font-size: clamp(3rem, 10vw, 7rem); font-weight: 500; letter-spacing: -.08em; line-height: .86; }
+h2 { font-size: 1rem; font-weight: 600; }
+
+.controls { display: grid; grid-template-columns: minmax(12rem, .8fr) minmax(16rem, 1.5fr) minmax(10rem, .65fr); gap: 1rem; align-items: end; padding: 1rem 0; border-block: 1px solid #aab4a4; }
+fieldset { min-width: 0; padding: 0; border: 0; }
+legend, label { font-size: .85rem; }
+fieldset label { display: block; margin-top: .4rem; }
+.words { display: grid; gap: .4rem; }
+textarea { width: 100%; min-height: 5rem; resize: vertical; padding: .65rem; color: inherit; background: #fffdf6; border: 1px solid #738174; border-radius: 0; font: inherit; }
+.actions { display: grid; gap: .5rem; }
+button { padding: .55rem .7rem; color: inherit; cursor: pointer; background: #f8f6ed; border: 1px solid #738174; border-radius: 0; font: inherit; }
+button:hover:not(:disabled) { background: #e7ecdf; }
+button:disabled, textarea:disabled { cursor: wait; opacity: .55; }
+.status { grid-column: 1 / -1; min-height: 1.5em; margin: 0; color: #526056; font-size: .85rem; }
+
+.garden-wrap { position: relative; min-height: min(68vh, 48rem); margin-top: 1.5rem; overflow: hidden; background: #9daf82; border: 1px solid #738174; }
+#garden { width: 100%; height: min(68vh, 48rem); min-height: 30rem; cursor: crosshair; touch-action: manipulation; }
+.reading { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #aab4a4; }
+.reading p { color: #526056; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid #1d3329; outline-offset: 3px; }
+
+@media (max-width: 45rem) {
+  .controls { grid-template-columns: 1fr; }
+  .garden-wrap, #garden { min-height: 34rem; height: 60vh; }
+}
