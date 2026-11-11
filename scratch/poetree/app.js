@@ -9,6 +9,7 @@ const undoButton = document.querySelector("#undo");
 const resetButton = document.querySelector("#reset");
 const status = document.querySelector("#status");
 const gardenList = document.querySelector("#garden-list");
+const plantTypeFieldset = document.querySelector("#plant-type");
 
 let pyodide;
 let loadPyodide;
@@ -47,6 +48,7 @@ function setReady(value) {
   growButton.disabled = !value;
   undoButton.disabled = !value || !selectedId;
   resetButton.disabled = !value || !garden.length;
+  plantTypeFieldset.disabled = !value || Boolean(selectedId);
 }
 
 function currentKind() {
@@ -87,7 +89,7 @@ async function refresh() {
     updateReading();
     setReady(true);
   } catch (error) {
-    setStatus(error.message || "Poetree could not grow those words.");
+    setStatus(error.message || "(P)rose garden could not grow those words.");
   }
 }
 
@@ -135,7 +137,9 @@ function drawPlant(state, plant, rect) {
   const densityScale = Math.max(0.2, Math.min(0.8, 1 / Math.sqrt(1 + state.words.length / 10)));
   const turtle = { x: rootX, y: rootY, angle: -Math.PI / 2 };
   const stack = [];
+  const selected = selectedId === plant.id;
   context.save();
+  if (selectedId && !selected) context.globalAlpha = 0.45;
   context.strokeStyle = "rgba(28, 47, 37, .7)";
   context.fillStyle = "#172c20";
   context.lineWidth = Math.max(1, 1.4 * densityScale);
@@ -162,6 +166,13 @@ function drawPlant(state, plant, rect) {
       context.save();
       context.translate((turtle.x + endX) / 2, (turtle.y + endY) / 2);
       context.rotate(turtle.angle);
+      if (selected) {
+        context.strokeStyle = "#fffdf4";
+        context.lineWidth = Math.max(3, 5 * densityScale);
+        context.lineJoin = "round";
+        context.strokeText(word, 0, -5 * densityScale);
+        context.strokeStyle = "rgba(28, 47, 37, .7)";
+      }
       context.fillText(word, 0, -5 * densityScale);
       context.restore();
       turtle.x = endX;
@@ -169,9 +180,16 @@ function drawPlant(state, plant, rect) {
     }
   }
 
-  context.fillStyle = selectedId === plant.id ? "#f7f3e6" : "#172c20";
+  if (selected) {
+    context.strokeStyle = "#fffdf4";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.arc(rootX, rootY, 11, 0, Math.PI * 2);
+    context.stroke();
+  }
+  context.fillStyle = selected ? "#f7f3e6" : "#172c20";
   context.beginPath();
-  context.arc(rootX, rootY, selectedId === plant.id ? 7 : 4, 0, Math.PI * 2);
+  context.arc(rootX, rootY, selected ? 7 : 4, 0, Math.PI * 2);
   context.fill();
   context.restore();
 }
@@ -205,11 +223,11 @@ canvas.addEventListener("click", (event) => {
   if (nearby) {
     selectedId = nearby.id;
     pendingRoot = null;
-    setStatus(`Selected ${nearby.kind}. Add up to 100 words, then grow.`);
+    setStatus(`Cultivating the ${nearby.kind}. Add up to 100 words, then press Return to grow.`);
   } else if (point.x >= PLANTING_BOUNDS.left && point.x <= PLANTING_BOUNDS.right && point.y >= PLANTING_BOUNDS.top && point.y <= PLANTING_BOUNDS.bottom) {
     selectedId = null;
     pendingRoot = point;
-    setStatus("New root selected. Choose a type, add up to 100 words, then grow.");
+    setStatus("New root selected. Choose a type, add up to 100 words, then press Return to grow.");
   } else {
     setStatus("Choose a spot inside the pale planting border.");
   }
@@ -217,7 +235,7 @@ canvas.addEventListener("click", (event) => {
   draw();
 });
 
-growButton.addEventListener("click", async () => {
+async function grow() {
   const text = wordsField.value.trim();
   if (!text) return setStatus("Enter words before growing.");
   const count = text.split(/\s+/).length;
@@ -238,6 +256,14 @@ growButton.addEventListener("click", async () => {
   wordsField.value = "";
   setReady(false);
   await refresh();
+}
+
+growButton.addEventListener("click", grow);
+
+wordsField.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
+  event.preventDefault();
+  if (!growButton.disabled) void grow();
 });
 
 undoButton.addEventListener("click", async () => {
@@ -256,7 +282,7 @@ undoButton.addEventListener("click", async () => {
 });
 
 resetButton.addEventListener("click", () => {
-  if (!confirm("Clear this browser's Poetree garden?")) return;
+  if (!confirm("Clear this browser's (P)rose garden?")) return;
   garden = [];
   plantStates = [];
   selectedId = null;
@@ -272,21 +298,21 @@ window.addEventListener("resize", draw);
 
 async function boot() {
   if (window.location.protocol === "file:") {
-    setStatus("Poetree must be opened through a local web server. From this folder, run: python -m http.server 8000 — then open http://localhost:8000.");
+    setStatus("(P)rose garden must be opened through a local web server. From this folder, run: python -m http.server 8000 — then open http://localhost:8000.");
     return;
   }
   try {
     ({ loadPyodide } = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs"));
     pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/" });
     const response = await fetch(CORE_URL);
-    if (!response.ok) throw new Error("The Poetree growth core could not be loaded.");
+    if (!response.ok) throw new Error("The (P)rose garden growth core could not be loaded.");
     pyodide.FS.writeFile("poetree_core.py", await response.text());
     await pyodide.runPythonAsync("from poetree_core import Session");
     ready = true;
     await refresh();
     setStatus(garden.length ? "Your saved garden is ready." : "Choose a place in the garden to begin.");
   } catch (error) {
-    setStatus(error.message || "Poetree could not start. Please reload the page.");
+    setStatus(error.message || "(P)rose garden could not start. Please reload the page.");
   }
 }
 

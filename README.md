@@ -1,8 +1,8 @@
 # Louis Chavey's scratch space
 
-Small browser experiments live here. [Poetree](./scratch/poetree/) is a local garden of word-grown plants.
+Small browser experiments live here. [(P)rose garden](./scratch/poetree/) is a local garden of word-grown plants.
 
-## Run Poetree locally
+## Run (P)rose garden locally
 
 Do not open the HTML file directly with `file://`: its browser Python runtime needs an HTTP origin. From `scratch/poetree`, run:
 
