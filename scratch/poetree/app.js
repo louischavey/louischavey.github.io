@@ -80,7 +80,7 @@ poetreeResult = json.dumps(rendered)
 }
 
 async function refresh() {
-  if (!ready) return;
+  if (!pyodide) return;
   try {
     await growStates();
     saveGarden();
